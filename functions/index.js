@@ -21,12 +21,8 @@ app.get('/displays', (req, res) => {
     .catch((err) => console.error(err));
 });
 
-exports.createDisplay = functions.https.onRequest((req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(400).json({ error: 'Method not allowed' });
-  }
-
-  const newDisplay = {
+app.post('/display', (req, res) => {
+const newDisplay = {
     body: req.body.body,
     userHandle: req.body.userHandle,
     createdAt: admin.firestore.Timestamp.fromDate(new Date()),
@@ -44,7 +40,5 @@ exports.createDisplay = functions.https.onRequest((req, res) => {
       console.error(err);
     });
 });
-
-// https://basurl.com/api/something
 
 exports.api = functions.https.onRequest(app);
