@@ -3,24 +3,22 @@ const admin = require('firebase-admin');
 
 admin.initializeApp();
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-exports.helloWorld = functions.https.onRequest((request, response) => {
-  functions.logger.info('Hello logs!', { structuredData: true });
-  response.send('Hello, world!');
-});
+const express = require('express');
+const app = express();
 
-exports.getDisplays = functions.https.onRequest((req, res) => {
-  admin.firestore().collection('displays').get()
-    .then(data => {
+app.get('/displays', (req, res) => {
+  admin
+    .firestore()
+    .collection('displays')
+    .get()
+    .then((data) => {
       let displays = [];
-      data.forEach(doc => {
+      data.forEach((doc) => {
         displays.push(doc.data());
       });
       return res.json(displays);
     })
-    .catch(err => console.error(err));
+    .catch((err) => console.error(err));
 });
 
 exports.createDisplay = functions.https.onRequest((req, res) => {
@@ -31,17 +29,22 @@ exports.createDisplay = functions.https.onRequest((req, res) => {
   const newDisplay = {
     body: req.body.body,
     userHandle: req.body.userHandle,
-    createdAt: admin.firestore.Timestamp.fromDate(new Date())
+    createdAt: admin.firestore.Timestamp.fromDate(new Date()),
   };
 
-  admin.firestore()
+  admin
+    .firestore()
     .collection('displays')
     .add(newDisplay)
-    .then(doc => {
-      res.json({ message: `document ${doc.id} created successfully` })
+    .then((doc) => {
+      res.json({ message: `document ${doc.id} created successfully` });
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).json({ error: 'something went wrong' });
       console.error(err);
-    })
+    });
 });
+
+// https://basurl.com/api/something
+
+exports.api = functions.https.onRequest(app);
